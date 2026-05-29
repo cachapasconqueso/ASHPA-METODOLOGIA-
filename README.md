@@ -16,7 +16,7 @@
 |-----|--------|
 | Desarrollador | Adrián Muñoz |
 | Desarrollador | Marcelo Cedeño |
-| Docente Supervisor | Santiago Durazno |
+| Docente Supervisor | Marco Guaman |
 | Institución | ITSS — Instituto Tecnológico Superior Sudamericano |
 
 ---

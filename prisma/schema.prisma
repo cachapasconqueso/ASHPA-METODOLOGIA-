@@ -1,0 +1,111 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Usuario {
+  id_usuario         Int                     @id @default(autoincrement()) @map("id usuario")
+  nombre             String                  @db.VarChar(50)
+  apellido           String                  @db.VarChar(50)
+  correo             String                  @unique @db.VarChar(100)
+  contrasena         String                  @db.VarChar(255)
+  rol                String                  @db.VarChar(20)
+  ultimo_acceso      DateTime?               @map("ultimo acceso")
+  
+  // Relaciones
+  grupos_dictados    Grupos_Cursos[]
+  inscripciones      Inscripciones_Grupos[]
+  progresos          Progreso_Estudiante[]
+  historial_eval     Historial_Evaluaciones[]
+
+  @@map("Usuarios")
+}
+
+model Grupos_Cursos {
+  id_grupo        Int                    @id @default(autoincrement())
+  nombre_grupo    String                 @db.VarChar(50)
+  id_profesor     Int
+  fecha_creacion  DateTime
+  
+  // Relaciones
+  profesor        Usuario                @relation(fields: [id_profesor], references: [id_usuario])
+  inscripciones   Inscripciones_Grupos[]
+}
+
+model Inscripciones_Grupos {
+  id_inscripcion    Int      @id @default(autoincrement())
+  id_grupo          Int
+  id_estudiante     Int      @map("id estudiante")
+  fecha_inscripcion DateTime
+
+  // Relaciones
+  grupo             Grupos_Cursos @relation(fields: [id_grupo], references: [id_grupo])
+  estudiante        Usuario       @relation(fields: [id_estudiante], references: [id_usuario])
+}
+
+model Modulos_Aprendizaje {
+  id_modulo   Int         @id @default(autoincrement()) @map("id modulo")
+  titulo      String      @db.VarChar(100)
+  descripcion String      @db.Text
+  nivel       String      @db.VarChar(20)
+  orden       Int
+  
+  // Relaciones
+  lecciones   Lecciones[]
+}
+
+model Lecciones {
+  id_leccion  Int                 @id @default(autoincrement()) @map("id leccion")
+  id_modulo   Int                 @map("id modulo")
+  titulo      String              @db.VarChar(100)
+  contenido   String              @db.Text
+  orden       Int
+
+  // Relaciones
+  modulo      Modulos_Aprendizaje @relation(fields: [id_modulo], references: [id_modulo])
+  evaluacion  Evaluaciones?
+  progresos   Progreso_Estudiante[]
+}
+
+model Evaluaciones {
+  id_evaluacion  Int                     @id @default(autoincrement())
+  id_leccion     Int                     @unique
+  titulo         String                  @db.VarChar(100)
+  puntaje_maximo Int
+  
+  // Relaciones
+  leccion        Lecciones               @relation(fields: [id_leccion], references: [id_leccion])
+  historiales    Historial_Evaluaciones[]
+}
+
+model Progreso_Estudiante {
+  id_progreso      Int      @id @default(autoincrement())
+  id_estudiante    Int
+  id_leccion       Int      @map("id leccion")
+  completado       Boolean
+  fecha_completed  DateTime @map("fecha_completado")
+
+  // Relaciones
+  estudiante       Usuario   @relation(fields: [id_estudiante], references: [id_usuario])
+  leccion          Lecciones @relation(fields: [id_leccion], references: [id_leccion])
+}
+
+model Historial_Evaluaciones {
+  id_historial     Int          @id @default(autoincrement()) @map("id historial")
+  id_estudiante    Int
+  id_evaluacion    Int
+  puntaje_obtenido Int
+  fecha_intento    DateTime     @map("fecha intento")
+
+  // Relaciones
+  estudiante       Usuario      @relation(fields: [id_estudiante], references: [id_usuario])
+  evaluacion       Evaluaciones @relation(fields: [id_evaluacion], references: [id_evaluacion])
+}

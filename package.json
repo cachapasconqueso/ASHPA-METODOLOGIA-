@@ -1,0 +1,28 @@
+{
+  "name": "ashpa-metodologia-",
+  "version": "1.0.0",
+  "description": "> Plataforma web gamificada para el fortalecimiento del idioma quichua en docentes y estudiantes de Educación Intercultural Bilingüe (EIB) en instituciones CECIB del Ecuador.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cachapasconqueso/ASHPA-METODOLOGIA-.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/cachapasconqueso/ASHPA-METODOLOGIA-/issues"
+  },
+  "homepage": "https://github.com/cachapasconqueso/ASHPA-METODOLOGIA-#readme",
+  "devDependencies": {
+    "@types/node": "^25.9.1",
+    "prisma": "^7.8.0"
+  },
+  "dependencies": {
+    "@prisma/client": "^7.8.0"
+  }
+}

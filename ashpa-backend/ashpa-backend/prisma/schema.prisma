@@ -1,0 +1,130 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  STUDENT
+  TEACHER
+}
+
+enum ExerciseType {
+  MULTIPLE_CHOICE
+  FILL_IN_THE_BLANK
+  MATCHING
+}
+
+model User {
+  id             String           @id @default(uuid())
+  name           String
+  email          String           @unique
+  password       String
+  role           Role             @default(STUDENT)
+  createdAt      DateTime         @default(now())
+  progress       Progress[]
+  badges         UserBadge[]
+  assignedExams  ExamAssignment[]
+}
+
+model Module {
+  id          String      @id @default(uuid())
+  name        String
+  description String
+  level       Int         @default(1)
+  order       Int         @unique
+  isActive    Boolean     @default(true)
+  exercises   Exercise[]
+  evaluation  Evaluation?
+  progress    Progress[]
+}
+
+model Exercise {
+  id       String       @id @default(uuid())
+  moduleId String
+  type     ExerciseType
+  question String
+  options  String[]
+  answer   String
+  module   Module       @relation(fields: [moduleId], references: [id])
+}
+
+model Evaluation {
+  id        String         @id @default(uuid())
+  moduleId  String         @unique
+  minScore  Int            @default(70)
+  module    Module         @relation(fields: [moduleId], references: [id])
+  questions EvalQuestion[]
+  attempts  EvalAttempt[]
+}
+
+model EvalQuestion {
+  id           String     @id @default(uuid())
+  evaluationId String
+  question     String
+  options      String[]
+  answer       String
+  evaluation   Evaluation @relation(fields: [evaluationId], references: [id])
+}
+
+model EvalAttempt {
+  id           String     @id @default(uuid())
+  evaluationId String
+  userId       String
+  score        Int
+  passed       Boolean
+  createdAt    DateTime   @default(now())
+  evaluation   Evaluation @relation(fields: [evaluationId], references: [id])
+}
+
+model Progress {
+  id         String    @id @default(uuid())
+  userId     String
+  moduleId   String
+  completed  Boolean   @default(false)
+  score      Int?
+  unlockedAt DateTime?
+  user       User      @relation(fields: [userId], references: [id])
+  module     Module    @relation(fields: [moduleId], references: [id])
+
+  @@unique([userId, moduleId])
+}
+
+model Badge {
+  id          String      @id @default(uuid())
+  name        String
+  description String
+  icon        String
+  users       UserBadge[]
+}
+
+model UserBadge {
+  id       String   @id @default(uuid())
+  userId   String
+  badgeId  String
+  earnedAt DateTime @default(now())
+  user     User     @relation(fields: [userId], references: [id])
+  badge    Badge    @relation(fields: [badgeId], references: [id])
+}
+
+model TeacherExam {
+  id          String           @id @default(uuid())
+  teacherId   String
+  title       String
+  questions   Json
+  createdAt   DateTime         @default(now())
+  assignments ExamAssignment[]
+}
+
+model ExamAssignment {
+  id        String      @id @default(uuid())
+  examId    String
+  studentId String
+  dueDate   DateTime
+  completed Boolean     @default(false)
+  score     Int?
+  exam      TeacherExam @relation(fields: [examId], references: [id])
+  student   User        @relation(fields: [studentId], references: [id])
+}

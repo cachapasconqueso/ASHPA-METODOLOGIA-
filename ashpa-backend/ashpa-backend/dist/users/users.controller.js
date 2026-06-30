@@ -25,6 +25,7 @@ let UsersController = class UsersController {
     constructor(usersService) {
         this.usersService = usersService;
     }
+    run;
     findAll() {
         return this.usersService.findAll();
     }

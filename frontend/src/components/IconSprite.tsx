@@ -20,6 +20,8 @@ export function IconSprite() {
         <symbol id="ic-copy" viewBox="0 0 20 20"><rect x="7" y="7" width="9" height="10" rx="1.5" stroke="currentColor" strokeWidth="1.6" fill="none" /><path d="M4 13V4.5A1.5 1.5 0 015.5 3H12" stroke="currentColor" strokeWidth="1.6" fill="none" /></symbol>
         <symbol id="ic-trash" viewBox="0 0 20 20"><path d="M4 6h12M8 6V4.5A1.5 1.5 0 019.5 3h1A1.5 1.5 0 0112 4.5V6" stroke="currentColor" strokeWidth="1.6" fill="none" strokeLinecap="round" /><path d="M5.5 6l.7 9.5A1.5 1.5 0 007.7 17h4.6a1.5 1.5 0 001.5-1.5L14.5 6" stroke="currentColor" strokeWidth="1.6" fill="none" strokeLinejoin="round" /><path d="M8.3 9v5M11.7 9v5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" /></symbol>
         <symbol id="chakana-full" viewBox="0 0 100 100"><path d="M40 0h20v20h20v20h20v20H80v20H60v20H40V80H20V60H0V40h20V20h20V0z" fill="currentColor" /><rect x="40" y="40" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="3" /></symbol>
+        <symbol id="ic-menu" viewBox="0 0 20 20"><path d="M3 6h14M3 10h14M3 14h14" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></symbol>
+        <symbol id="ic-close" viewBox="0 0 20 20"><path d="M5 5l10 10M15 5L5 15" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></symbol>
       </defs>
     </svg>
   )

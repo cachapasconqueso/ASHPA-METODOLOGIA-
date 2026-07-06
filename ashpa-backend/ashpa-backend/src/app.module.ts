@@ -2,26 +2,26 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './auth/auth.module';
-import { UsersModule } from './users/users.module';
-import { ModulesModule } from './modules/modules.module';
-import { ExercisesModule } from './exercises/exercises.module';
-import { EvaluationsModule } from './evaluations/evaluations.module';
-import { ProgressModule } from './progress/progress.module';
-import { TeacherModule } from './teacher/teacher.module';
-import { BadgesModule } from './badges/badges.module';
+import { UsuariosModule } from './usuarios/usuarios.module';
+import { AulasModule } from './aulas/aulas.module';
+import { ModulosModule } from './modulos/modulos.module';
+import { EjerciciosModule } from './ejercicios/ejercicios.module';
+import { EvaluacionesModule } from './evaluaciones/evaluaciones.module';
+import { ProgresoModule } from './progreso/progreso.module';
+import { InsigniasModule } from './insignias/insignias.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     PrismaModule,
     AuthModule,
-    UsersModule,
-    ModulesModule,
-    ExercisesModule,
-    EvaluationsModule,
-    ProgressModule,
-    TeacherModule,
-    BadgesModule,
+    UsuariosModule,
+    AulasModule,
+    ModulosModule,
+    EjerciciosModule,
+    EvaluacionesModule,
+    ProgresoModule,
+    InsigniasModule,
   ],
 })
 export class AppModule {}

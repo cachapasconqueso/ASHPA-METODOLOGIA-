@@ -6,125 +6,215 @@ datasource db {
   provider = "postgresql"
 }
 
-enum Role {
-  STUDENT
-  TEACHER
+// ─────────────────────────────────────────────
+//  Usuarios, roles y permisos (RBAC)
+// ─────────────────────────────────────────────
+
+model Usuario {
+  id         String   @id @default(uuid())
+  nombre     String
+  email      String   @unique
+  contrasena String
+  creadoEn   DateTime @default(now()) @map("creado_en")
+
+  roles             UsuarioRol[]
+  aulasComoProfesor Aula[]
+  inscripciones     AulaEstudiante[]
+  progreso          ProgresoUsuario[]
+  intentos          EvaluacionIntento[]
+  insignias         InsigniaUsuario[]
+
+  @@map("usuarios")
 }
 
-enum ExerciseType {
-  MULTIPLE_CHOICE
-  FILL_IN_THE_BLANK
-  MATCHING
+model Rol {
+  id          String @id @default(uuid())
+  nombre      String @unique
+  descripcion String
+
+  usuarios UsuarioRol[]
+  permisos RolPermiso[]
+
+  @@map("roles")
 }
 
-model User {
-  id             String           @id @default(uuid())
-  name           String
-  email          String           @unique
-  password       String
-  role           Role             @default(STUDENT)
-  createdAt      DateTime         @default(now())
-  progress       Progress[]
-  badges         UserBadge[]
-  assignedExams  ExamAssignment[]
+model Permiso {
+  id          String @id @default(uuid())
+  nombre      String @unique
+  descripcion String
+
+  roles RolPermiso[]
+
+  @@map("permisos")
 }
 
-model Module {
-  id          String      @id @default(uuid())
-  name        String
-  description String
-  level       Int         @default(1)
-  order       Int         @unique
-  isActive    Boolean     @default(true)
-  exercises   Exercise[]
-  evaluation  Evaluation?
-  progress    Progress[]
+model UsuarioRol {
+  usuarioId String @map("usuario_id")
+  rolId     String @map("rol_id")
+
+  usuario Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  rol     Rol     @relation(fields: [rolId], references: [id], onDelete: Cascade)
+
+  @@id([usuarioId, rolId])
+  @@map("usuarios_roles")
 }
 
-model Exercise {
-  id       String       @id @default(uuid())
-  moduleId String
-  type     ExerciseType
-  question String
-  options  String[]
-  answer   String
-  module   Module       @relation(fields: [moduleId], references: [id])
+model RolPermiso {
+  rolId     String @map("rol_id")
+  permisoId String @map("permiso_id")
+
+  rol     Rol     @relation(fields: [rolId], references: [id], onDelete: Cascade)
+  permiso Permiso @relation(fields: [permisoId], references: [id], onDelete: Cascade)
+
+  @@id([rolId, permisoId])
+  @@map("roles_permisos")
 }
 
-model Evaluation {
-  id        String         @id @default(uuid())
-  moduleId  String         @unique
-  minScore  Int            @default(70)
-  module    Module         @relation(fields: [moduleId], references: [id])
-  questions EvalQuestion[]
-  attempts  EvalAttempt[]
+// ─────────────────────────────────────────────
+//  Aulas e inscripciones
+// ─────────────────────────────────────────────
+
+model Aula {
+  id         String   @id @default(uuid())
+  nombre     String
+  codigo     String   @unique
+  profesorId String   @map("profesor_id")
+  creadoEn   DateTime @default(now()) @map("creado_en")
+
+  profesor    Usuario          @relation(fields: [profesorId], references: [id], onDelete: Cascade)
+  estudiantes AulaEstudiante[]
+  modulos     Modulo[]
+
+  @@map("aulas")
 }
 
-model EvalQuestion {
-  id           String     @id @default(uuid())
-  evaluationId String
-  question     String
-  options      String[]
-  answer       String
-  evaluation   Evaluation @relation(fields: [evaluationId], references: [id])
+model AulaEstudiante {
+  aulaId       String   @map("aula_id")
+  estudianteId String   @map("estudiante_id")
+  inscritoEn   DateTime @default(now()) @map("inscrito_en")
+
+  aula       Aula    @relation(fields: [aulaId], references: [id], onDelete: Cascade)
+  estudiante Usuario @relation(fields: [estudianteId], references: [id], onDelete: Cascade)
+
+  @@id([aulaId, estudianteId])
+  @@map("aula_estudiantes")
 }
 
-model EvalAttempt {
-  id           String     @id @default(uuid())
-  evaluationId String
-  userId       String
-  score        Int
-  passed       Boolean
-  createdAt    DateTime   @default(now())
-  evaluation   Evaluation @relation(fields: [evaluationId], references: [id])
+// ─────────────────────────────────────────────
+//  Módulos, ejercicios y evaluaciones
+// ─────────────────────────────────────────────
+
+model Modulo {
+  id          String  @id @default(uuid())
+  aulaId      String  @map("aula_id")
+  nombre      String
+  descripcion String
+  nivel       Int     @default(1)
+  orden       Int
+  activo      Boolean @default(true)
+
+  aula       Aula              @relation(fields: [aulaId], references: [id], onDelete: Cascade)
+  ejercicios Ejercicio[]
+  evaluacion Evaluacion?
+  progreso   ProgresoUsuario[]
+  insignias  Insignia[]
+
+  @@unique([aulaId, orden])
+  @@map("modulos")
 }
 
-model Progress {
-  id         String    @id @default(uuid())
-  userId     String
-  moduleId   String
-  completed  Boolean   @default(false)
-  score      Int?
-  unlockedAt DateTime?
-  user       User      @relation(fields: [userId], references: [id])
-  module     Module    @relation(fields: [moduleId], references: [id])
+model Ejercicio {
+  id        String   @id @default(uuid())
+  moduloId  String   @map("modulo_id")
+  tipo      String
+  pregunta  String
+  opciones  String[]
+  respuesta String
 
-  @@unique([userId, moduleId])
+  modulo Modulo @relation(fields: [moduloId], references: [id], onDelete: Cascade)
+
+  @@map("ejercicios")
 }
 
-model Badge {
-  id          String      @id @default(uuid())
-  name        String
-  description String
-  icon        String
-  users       UserBadge[]
+model Evaluacion {
+  id            String @id @default(uuid())
+  moduloId      String @unique @map("modulo_id")
+  puntajeMinimo Int    @default(70) @map("puntaje_minimo")
+
+  modulo    Modulo               @relation(fields: [moduloId], references: [id], onDelete: Cascade)
+  preguntas EvaluacionPregunta[]
+  intentos  EvaluacionIntento[]
+
+  @@map("evaluaciones")
 }
 
-model UserBadge {
-  id       String   @id @default(uuid())
-  userId   String
-  badgeId  String
-  earnedAt DateTime @default(now())
-  user     User     @relation(fields: [userId], references: [id])
-  badge    Badge    @relation(fields: [badgeId], references: [id])
+model EvaluacionPregunta {
+  id           String   @id @default(uuid())
+  evaluacionId String   @map("evaluacion_id")
+  pregunta     String
+  opciones     String[]
+  respuesta    String
+
+  evaluacion Evaluacion @relation(fields: [evaluacionId], references: [id], onDelete: Cascade)
+
+  @@map("evaluacion_preguntas")
 }
 
-model TeacherExam {
-  id          String           @id @default(uuid())
-  teacherId   String
-  title       String
-  questions   Json
-  createdAt   DateTime         @default(now())
-  assignments ExamAssignment[]
+model EvaluacionIntento {
+  id           String   @id @default(uuid())
+  evaluacionId String   @map("evaluacion_id")
+  usuarioId    String   @map("usuario_id")
+  puntaje      Int
+  aprobado     Boolean
+  creadoEn     DateTime @default(now()) @map("creado_en")
+
+  evaluacion Evaluacion @relation(fields: [evaluacionId], references: [id], onDelete: Cascade)
+  usuario    Usuario    @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+
+  @@map("evaluacion_intentos")
 }
 
-model ExamAssignment {
-  id        String      @id @default(uuid())
-  examId    String
-  studentId String
-  dueDate   DateTime
-  completed Boolean     @default(false)
-  score     Int?
-  exam      TeacherExam @relation(fields: [examId], references: [id])
-  student   User        @relation(fields: [studentId], references: [id])
+// ─────────────────────────────────────────────
+//  Progreso e insignias
+// ─────────────────────────────────────────────
+
+model ProgresoUsuario {
+  id             String    @id @default(uuid())
+  usuarioId      String    @map("usuario_id")
+  moduloId       String    @map("modulo_id")
+  completado     Boolean   @default(false)
+  puntaje        Int?
+  desbloqueadoEn DateTime? @map("desbloqueado_en")
+  creadoEn       DateTime  @default(now()) @map("creado_en")
+
+  usuario Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  modulo  Modulo  @relation(fields: [moduloId], references: [id], onDelete: Cascade)
+
+  @@unique([usuarioId, moduloId])
+  @@map("progreso_usuario")
+}
+
+model Insignia {
+  id          String  @id @default(uuid())
+  moduloId    String? @map("modulo_id")
+  nombre      String
+  descripcion String
+  icono       String
+
+  modulo   Modulo?           @relation(fields: [moduloId], references: [id], onDelete: SetNull)
+  usuarios InsigniaUsuario[]
+
+  @@map("insignias")
+}
+
+model InsigniaUsuario {
+  id         String   @id @default(uuid())
+  usuarioId  String   @map("usuario_id")
+  insigniaId String   @map("insignia_id")
+  ganadaEn   DateTime @default(now()) @map("ganada_en")
+
+  usuario  Usuario  @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  insignia Insignia @relation(fields: [insigniaId], references: [id], onDelete: Cascade)
+
+  @@map("insignias_usuario")
 }

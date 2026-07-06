@@ -1,18 +1,19 @@
-import { IsEmail, IsEnum, IsNotEmpty, IsString, MinLength } from 'class-validator';
-import { Role } from '@prisma/client';
+import { IsEmail, IsNotEmpty, IsString, MinLength } from 'class-validator';
 
 export class RegisterDto {
   @IsNotEmpty()
   @IsString()
-  name: string;
+  nombre: string;
 
   @IsEmail()
   email: string;
 
   @IsString()
   @MinLength(6)
-  password: string;
+  contrasena: string;
 
-  @IsEnum(Role)
-  role: Role;
+  // Código del aula proporcionado por el profesor: obligatorio para registrarse
+  @IsNotEmpty()
+  @IsString()
+  codigo: string;
 }

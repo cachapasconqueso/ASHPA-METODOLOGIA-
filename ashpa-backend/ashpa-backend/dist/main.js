@@ -16,6 +16,8 @@ async function bootstrap() {
             'http://localhost:5173',
             'http://localhost:4173',
             'http://localhost:3001',
+            'https://ashpa-frontend-cachapasconquesos-projects.vercel.app',
+            /^https:\/\/ashpa-frontend-.*-cachapasconquesos-projects\.vercel\.app$/,
         ],
         methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
         allowedHeaders: ['Content-Type', 'Authorization'],

@@ -47,6 +47,7 @@ const common_1 = require("@nestjs/common");
 const jwt_1 = require("@nestjs/jwt");
 const bcrypt = __importStar(require("bcrypt"));
 const prisma_service_1 = require("../prisma/prisma.service");
+const roles_constants_1 = require("./roles.constants");
 let AuthService = class AuthService {
     prisma;
     jwtService;
@@ -55,33 +56,63 @@ let AuthService = class AuthService {
         this.jwtService = jwtService;
     }
     async register(dto) {
-        const existing = await this.prisma.user.findUnique({ where: { email: dto.email } });
-        if (existing)
-            throw new common_1.BadRequestException('Email already in use');
-        const hashed = await bcrypt.hash(dto.password, 10);
-        const user = await this.prisma.user.create({
-            data: { name: dto.name, email: dto.email, password: hashed, role: dto.role },
+        const existente = await this.prisma.usuario.findUnique({ where: { email: dto.email } });
+        if (existente)
+            throw new common_1.BadRequestException('El email ya está en uso');
+        const aula = await this.prisma.aula.findUnique({ where: { codigo: dto.codigo } });
+        if (!aula)
+            throw new common_1.BadRequestException('El código de aula no es válido');
+        const hash = await bcrypt.hash(dto.contrasena, 10);
+        const usuario = await this.prisma.usuario.create({
+            data: {
+                nombre: dto.nombre,
+                email: dto.email,
+                contrasena: hash,
+                roles: {
+                    create: {
+                        rol: {
+                            connectOrCreate: {
+                                where: { nombre: roles_constants_1.ROLES.ESTUDIANTE },
+                                create: {
+                                    nombre: roles_constants_1.ROLES.ESTUDIANTE,
+                                    descripcion: 'Alumno que realiza los módulos y evaluaciones',
+                                },
+                            },
+                        },
+                    },
+                },
+                inscripciones: {
+                    create: { aulaId: aula.id },
+                },
+            },
+            include: { roles: { include: { rol: true } } },
         });
-        const token = this.signToken(user.id, user.email, user.role);
-        const { password: _, ...safeUser } = user;
-        return { access_token: token, user: safeUser };
+        const respuesta = this.construirRespuesta(usuario);
+        return { ...respuesta, aula: { id: aula.id, nombre: aula.nombre, codigo: aula.codigo } };
     }
     async login(dto) {
-        const user = await this.prisma.user.findUnique({ where: { email: dto.email } });
-        if (!user)
-            throw new common_1.UnauthorizedException('Invalid credentials');
-        const valid = await bcrypt.compare(dto.password, user.password);
-        if (!valid)
-            throw new common_1.UnauthorizedException('Invalid credentials');
-        const token = this.signToken(user.id, user.email, user.role);
-        const { password: _, ...safeUser } = user;
-        return { access_token: token, user: safeUser };
+        const usuario = await this.prisma.usuario.findUnique({
+            where: { email: dto.email },
+            include: { roles: { include: { rol: true } } },
+        });
+        if (!usuario)
+            throw new common_1.UnauthorizedException('Credenciales inválidas');
+        const valido = await bcrypt.compare(dto.contrasena, usuario.contrasena);
+        if (!valido)
+            throw new common_1.UnauthorizedException('Credenciales inválidas');
+        return this.construirRespuesta(usuario);
     }
-    getMe(user) {
-        return user;
+    getMe(usuario) {
+        return usuario;
     }
-    signToken(userId, email, role) {
-        return this.jwtService.sign({ sub: userId, email, role });
+    construirRespuesta(usuario) {
+        const roles = usuario.roles.map((ur) => ur.rol.nombre);
+        const token = this.signToken(usuario.id, usuario.email, roles);
+        const { contrasena: _omitir, roles: _omitirRoles, ...datos } = usuario;
+        return { access_token: token, usuario: { ...datos, roles } };
+    }
+    signToken(usuarioId, email, roles) {
+        return this.jwtService.sign({ sub: usuarioId, email, roles });
     }
 };
 exports.AuthService = AuthService;

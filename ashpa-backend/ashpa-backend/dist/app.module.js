@@ -11,13 +11,13 @@ const common_1 = require("@nestjs/common");
 const config_1 = require("@nestjs/config");
 const prisma_module_1 = require("./prisma/prisma.module");
 const auth_module_1 = require("./auth/auth.module");
-const users_module_1 = require("./users/users.module");
-const modules_module_1 = require("./modules/modules.module");
-const exercises_module_1 = require("./exercises/exercises.module");
-const evaluations_module_1 = require("./evaluations/evaluations.module");
-const progress_module_1 = require("./progress/progress.module");
-const teacher_module_1 = require("./teacher/teacher.module");
-const badges_module_1 = require("./badges/badges.module");
+const usuarios_module_1 = require("./usuarios/usuarios.module");
+const aulas_module_1 = require("./aulas/aulas.module");
+const modulos_module_1 = require("./modulos/modulos.module");
+const ejercicios_module_1 = require("./ejercicios/ejercicios.module");
+const evaluaciones_module_1 = require("./evaluaciones/evaluaciones.module");
+const progreso_module_1 = require("./progreso/progreso.module");
+const insignias_module_1 = require("./insignias/insignias.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -27,13 +27,13 @@ exports.AppModule = AppModule = __decorate([
             config_1.ConfigModule.forRoot({ isGlobal: true }),
             prisma_module_1.PrismaModule,
             auth_module_1.AuthModule,
-            users_module_1.UsersModule,
-            modules_module_1.ModulesModule,
-            exercises_module_1.ExercisesModule,
-            evaluations_module_1.EvaluationsModule,
-            progress_module_1.ProgressModule,
-            teacher_module_1.TeacherModule,
-            badges_module_1.BadgesModule,
+            usuarios_module_1.UsuariosModule,
+            aulas_module_1.AulasModule,
+            modulos_module_1.ModulosModule,
+            ejercicios_module_1.EjerciciosModule,
+            evaluaciones_module_1.EvaluacionesModule,
+            progreso_module_1.ProgresoModule,
+            insignias_module_1.InsigniasModule,
         ],
     })
 ], AppModule);

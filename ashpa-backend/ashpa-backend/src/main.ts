@@ -21,6 +21,7 @@ async function bootstrap() {
       'http://localhost:3001', // puerto alternativo si lo usas
       'https://ashpa-frontend-cachapasconquesos-projects.vercel.app', // Vercel producción
       /^https:\/\/ashpa-frontend-.*-cachapasconquesos-projects\.vercel\.app$/, // Vercel preview deploys
+      'https://frontend-delta-eight-12.vercel.app', // alias viejo (previo al rename), ya compartido con gente
     ],
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],

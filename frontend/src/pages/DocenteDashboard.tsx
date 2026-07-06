@@ -3,7 +3,7 @@ import { AppShell } from '../components/AppShell'
 import { StatCard } from '../components/StatCard'
 import { Icon } from '../components/IconSprite'
 import { useAuth } from '../hooks/useAuth'
-import { misAulas, estudiantesDeAula, crearAula } from '../api/aulas.api'
+import { misAulas, estudiantesDeAula, crearAula, eliminarAula } from '../api/aulas.api'
 import { modulosPorAula, cambiarActivoModulo } from '../api/modulos.api'
 import { toast } from '../store/toast'
 import { iniciales, mensajeError } from '../utils/helpers'
@@ -27,6 +27,7 @@ export function DocenteDashboard() {
   const [modulos, setModulos] = useState<Modulo[]>([])
   const [modal, setModal] = useState(false)
   const [nombreNueva, setNombreNueva] = useState('')
+  const [aulaAEliminar, setAulaAEliminar] = useState<Aula | null>(null)
 
   const cargarAulas = () => misAulas().then(({ data }) => { setAulas(data); if (!aulaSel && data.length) setAulaSel(data[0].id) })
 
@@ -63,6 +64,20 @@ export function DocenteDashboard() {
       toast(!m.activo ? 'Módulo habilitado para tus estudiantes' : 'Módulo bloqueado')
     } catch (e) {
       toast(mensajeError(e))
+    }
+  }
+
+  const eliminar = async () => {
+    if (!aulaAEliminar) return
+    try {
+      await eliminarAula(aulaAEliminar.id)
+      toast(`Aula "${aulaAEliminar.nombre}" eliminada`)
+      const { data } = await misAulas()
+      setAulas(data)
+      if (aulaSel === aulaAEliminar.id) setAulaSel(data.length ? data[0].id : null)
+      setAulaAEliminar(null)
+    } catch (e) {
+      toast(mensajeError(e, 'No se pudo eliminar el aula'))
     }
   }
 
@@ -116,6 +131,14 @@ export function DocenteDashboard() {
             <div className="class-grid">
               {aulas.map((a) => (
                 <div key={a.id} className={`class-card ${a.id === aulaSel ? 'selected' : ''}`} onClick={() => { setAulaSel(a.id); setVista('modulos') }}>
+                  <button
+                    className="btn-icon"
+                    style={{ position: 'absolute', top: 14, right: 14, width: 30, height: 30 }}
+                    onClick={(e) => { e.stopPropagation(); setAulaAEliminar(a) }}
+                    title="Eliminar aula"
+                  >
+                    <Icon name="ic-trash" size={15} />
+                  </button>
                   <span className="code-pill">{a.codigo}</span>
                   <h4>{a.nombre}</h4>
                   <div className="meta">{a._count?.estudiantes ?? 0} estudiante(s) · {a._count?.modulos ?? 0} módulos</div>
@@ -204,6 +227,22 @@ export function DocenteDashboard() {
             <div className="field"><label>Nombre del aula</label><input type="text" value={nombreNueva} onChange={(e) => setNombreNueva(e.target.value)} placeholder="Ej. Quichua Intermedio B" /></div>
             <p className="field-hint" style={{ marginBottom: 18 }}>Se generará un código único y los 6 módulos (solo el primero habilitado).</p>
             <button className="btn btn-primary btn-block" onClick={crear}>Generar aula y código</button>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL CONFIRMAR ELIMINAR AULA */}
+      {aulaAEliminar && (
+        <div className="modal-overlay" onClick={(e) => { if (e.target === e.currentTarget) setAulaAEliminar(null) }}>
+          <div className="modal">
+            <div className="modal-head"><h3>Eliminar aula</h3><button className="btn-icon" onClick={() => setAulaAEliminar(null)}>✕</button></div>
+            <p className="field-hint" style={{ marginBottom: 18 }}>
+              Se eliminará <strong>{aulaAEliminar.nombre}</strong> junto con sus módulos, estudiantes inscritos y todo su progreso. Esta acción no se puede deshacer.
+            </p>
+            <div style={{ display: 'flex', gap: 10 }}>
+              <button className="btn btn-ghost" style={{ flex: 1 }} onClick={() => setAulaAEliminar(null)}>Cancelar</button>
+              <button className="btn" style={{ flex: 1, background: '#A83A3A', color: '#fff' }} onClick={eliminar}>Eliminar aula</button>
+            </div>
           </div>
         </div>
       )}

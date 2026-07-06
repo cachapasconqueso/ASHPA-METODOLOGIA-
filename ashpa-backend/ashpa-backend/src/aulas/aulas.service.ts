@@ -85,6 +85,15 @@ export class AulasService {
     return { mensaje: 'Inscripción exitosa', aula: { id: aula.id, nombre: aula.nombre } };
   }
 
+  async eliminar(profesorId: string, aulaId: string) {
+    const aula = await this.prisma.aula.findFirst({ where: { id: aulaId, profesorId } });
+    if (!aula) throw new NotFoundException('Aula no encontrada');
+    // El schema tiene onDelete: Cascade en aula_estudiantes/modulos/ejercicios/evaluaciones/progreso,
+    // así que borrar el aula limpia todo lo asociado.
+    await this.prisma.aula.delete({ where: { id: aulaId } });
+    return { mensaje: 'Aula eliminada' };
+  }
+
   async estudiantesDeAula(aulaId: string, profesorId: string) {
     const aula = await this.prisma.aula.findFirst({ where: { id: aulaId, profesorId } });
     if (!aula) throw new NotFoundException('Aula no encontrada');

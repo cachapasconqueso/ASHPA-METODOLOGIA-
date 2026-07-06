@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Request, UseGuards } from '@nestjs/common';
 import { AulasService } from './aulas.service';
 import { CrearAulaDto } from './dto/crear-aula.dto';
 import { UnirseAulaDto } from './dto/unirse-aula.dto';
@@ -29,6 +29,12 @@ export class AulasController {
   @Get(':id/estudiantes')
   estudiantesDeAula(@Param('id') id: string, @Request() req) {
     return this.aulasService.estudiantesDeAula(id, req.user.id);
+  }
+
+  @Roles(ROLES.PROFESOR)
+  @Delete(':id')
+  eliminar(@Param('id') id: string, @Request() req) {
+    return this.aulasService.eliminar(req.user.id, id);
   }
 
   // ── Estudiante ────────────────────────────

@@ -9,6 +9,9 @@ export const misAulas = () => api.get<Aula[]>('/aulas/mias')
 export const estudiantesDeAula = (aulaId: string) =>
   api.get<EstudianteAula[]>(`/aulas/${aulaId}/estudiantes`)
 
+export const eliminarAula = (aulaId: string) =>
+  api.delete<{ mensaje: string }>(`/aulas/${aulaId}`)
+
 // Estudiante
 export const aulasInscritas = () => api.get<Aula[]>('/aulas/inscritas')
 

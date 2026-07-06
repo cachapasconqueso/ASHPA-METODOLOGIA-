@@ -19,6 +19,8 @@ async function bootstrap() {
       'http://localhost:5173', // Vite dev server (puerto por defecto)
       'http://localhost:4173', // Vite preview
       'http://localhost:3001', // puerto alternativo si lo usas
+      'https://ashpa-frontend-cachapasconquesos-projects.vercel.app', // Vercel producción
+      /^https:\/\/ashpa-frontend-.*-cachapasconquesos-projects\.vercel\.app$/, // Vercel preview deploys
     ],
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],

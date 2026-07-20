@@ -1,6 +1,7 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { IntentoDto } from './dto/intento.dto';
+import { shuffle } from '../common/shuffle';
 
 @Injectable()
 export class EvaluacionesService {
@@ -21,7 +22,13 @@ export class EvaluacionesService {
       },
     });
     if (!evaluacion) throw new NotFoundException('No hay evaluación para este módulo');
-    return evaluacion;
+    // Se baraja el orden de las opciones para que la respuesta correcta no
+    // quede siempre en la misma posición. El orden de las preguntas se
+    // mantiene fijo (orderBy: id asc) para que coincida con registrarIntento.
+    return {
+      ...evaluacion,
+      preguntas: evaluacion.preguntas.map((p) => ({ ...p, opciones: shuffle(p.opciones) })),
+    };
   }
 
   async registrarIntento(moduloId: string, usuarioId: string, dto: IntentoDto) {

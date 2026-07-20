@@ -28,6 +28,7 @@ export class AulasService {
               create: CATALOGO_MODULOS.map((m) => ({
                 nombre: m.nombre,
                 descripcion: m.descripcion,
+                contenido: m.contenido,
                 nivel: m.nivel,
                 orden: m.orden,
                 activo: m.orden === 1,

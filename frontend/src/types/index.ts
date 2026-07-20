@@ -48,8 +48,10 @@ export interface Ejercicio {
   id: string
   moduloId: string
   tipo: string
+  explicacion: string
   pregunta: string
   opciones: string[]
+  respuesta: string
 }
 
 export interface PreguntaEval {
@@ -71,6 +73,7 @@ export interface ModuloDetalle {
   aulaId: string
   nombre: string
   descripcion: string
+  contenido: string
   nivel: number
   orden: number
   activo: boolean

@@ -109,6 +109,7 @@ model Modulo {
   aulaId      String  @map("aula_id")
   nombre      String
   descripcion String
+  contenido   String  @default("")
   nivel       Int     @default(1)
   orden       Int
   activo      Boolean @default(true)
@@ -124,12 +125,13 @@ model Modulo {
 }
 
 model Ejercicio {
-  id        String   @id @default(uuid())
-  moduloId  String   @map("modulo_id")
-  tipo      String
-  pregunta  String
-  opciones  String[]
-  respuesta String
+  id         String   @id @default(uuid())
+  moduloId   String   @map("modulo_id")
+  tipo       String
+  explicacion String  @default("")
+  pregunta   String
+  opciones   String[]
+  respuesta  String
 
   modulo Modulo @relation(fields: [moduloId], references: [id], onDelete: Cascade)
 

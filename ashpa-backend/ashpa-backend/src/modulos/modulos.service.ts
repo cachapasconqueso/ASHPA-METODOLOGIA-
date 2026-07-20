@@ -1,5 +1,6 @@
 import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { shuffle } from '../common/shuffle';
 
 @Injectable()
 export class ModulosService {
@@ -29,12 +30,14 @@ export class ModulosService {
   }
 
   async obtener(id: string) {
-    // No se expone `respuesta` de ejercicios ni de preguntas de evaluación
+    // Los ejercicios de práctica son de autocorrección (no se califican), así que
+    // sí exponen `respuesta` para dar feedback inmediato. Las preguntas de la
+    // evaluación final SÍ se califican, por eso esas nunca exponen `respuesta`.
     const mod = await this.prisma.modulo.findUnique({
       where: { id },
       include: {
         ejercicios: {
-          select: { id: true, moduloId: true, tipo: true, pregunta: true, opciones: true },
+          select: { id: true, moduloId: true, tipo: true, explicacion: true, pregunta: true, opciones: true, respuesta: true },
         },
         evaluacion: {
           select: {
@@ -50,7 +53,16 @@ export class ModulosService {
       },
     });
     if (!mod) throw new NotFoundException('Módulo no encontrado');
-    return mod;
+    // Se baraja el orden de las opciones para que la respuesta correcta no
+    // quede siempre en la misma posición.
+    return {
+      ...mod,
+      ejercicios: mod.ejercicios.map((ej) => ({ ...ej, opciones: shuffle(ej.opciones) })),
+      evaluacion: mod.evaluacion && {
+        ...mod.evaluacion,
+        preguntas: mod.evaluacion.preguntas.map((p) => ({ ...p, opciones: shuffle(p.opciones) })),
+      },
+    };
   }
 
   // Solo el docente dueño del aula puede habilitar/deshabilitar un módulo

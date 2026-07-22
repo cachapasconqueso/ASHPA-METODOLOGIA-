@@ -1,375 +1,592 @@
 # 📋 Product Backlog — Historias de Usuario
 ## Proyecto ASHPA — Sistema de Módulos para el Aprendizaje del Quichua
 
-> **Formato:** Como `[rol]`, quiero `[acción]`, para `[beneficio]`.
+> **Formato:** Como [rol], quiero [acción], para [beneficio].
 >
-> **Prioridad:** 🔴 Alta | 🟡 Media | 🟢 Baja
->
-> **Story Points:** Estimación de esfuerzo relativo (Fibonacci: 1, 2, 3, 5, 8, 13)
+> Cada historia incluye Valor de negocio, Esfuerzo estimado y Riesgo, además de Criterios de Aceptación (Dado que / Cuando / Entonces), Reglas de Negocio y Requerimientos No Funcionales.
 
 ---
 
-## 🗂️ ÉPICAS DEL PROYECTO
+## H.U.01 — Registrarme en la plataforma con mi nombre, correo electrónico, contraseña y rol
 
-| ID Épica | Nombre | Descripción |
-|----------|--------|-------------|
-| **EP-01** | Autenticación y Registro | Gestión de acceso a la plataforma para estudiantes y docentes |
-| **EP-02** | Landing Page | Página de presentación pública de ASHPA |
-| **EP-03** | Módulos de Aprendizaje | Sistema de módulos gamificados con contenido en quichua |
-| **EP-04** | Evaluaciones y Progreso | Sistema de evaluaciones y seguimiento del avance del estudiante |
-| **EP-05** | Panel Docente | Funcionalidades exclusivas para el rol de docente |
-| **EP-06** | Administración | Gestión del sistema por parte del administrador |
-
----
-
-## 📝 HISTORIAS DE USUARIO
-
----
-
-### EP-01: Autenticación y Registro
-
----
-
-#### HU-01 — Registro de estudiante
 | Campo | Detalle |
-|-------|---------|
-| **Historia** | Como **estudiante**, quiero **registrarme en la plataforma con mi nombre, correo y contraseña**, para **crear mi cuenta y acceder a los módulos de aprendizaje del quichua**. |
-| **Prioridad** | 🔴 Alta |
-| **Story Points** | 3 |
-| **Sprint** | Sprint 1 |
+|-------|--------|
+| **Valor** | ALTO/90 |
+| **Esfuerzo** | 30 |
+| **Riesgo** | ALTO |
 
-**Criterios de aceptación:**
-- [ ] El formulario de registro solicita: nombre completo, correo electrónico y contraseña
-- [ ] Se valida que el correo no esté ya registrado
-- [ ] La contraseña tiene mínimo 8 caracteres
-- [ ] Al registrarse exitosamente, el estudiante es redirigido a su dashboard
-- [ ] Se muestra un mensaje de error claro si algún campo es inválido
+**Como:** Estudiante / Docente  
+**Puedo:** Registrarme en la plataforma con mi nombre, correo electrónico, contraseña y rol  
+**Para:** Crear mi cuenta y acceder a todas las funcionalidades de ASHPA según mi perfil
+
+**Criterios de Aceptación**
+
+- **Dado que:** Necesito tener una cuenta activa para ingresar a los módulos de aprendizaje del quichua
+- **Cuando:** Ingreso mis datos personales y selecciono mi rol (STUDENT o TEACHER) en el formulario de registro
+- **Entonces:** El sistema valida mis datos, crea mi cuenta con contraseña encriptada, genera un JWT y me redirige al dashboard según mi rol
+
+**Detalles**
+
+*Reglas del Negocio:*
+- El correo electrónico debe ser único en el sistema (no puede existir dos cuentas con el mismo correo)
+- La contraseña debe tener mínimo 8 caracteres
+- El rol debe ser únicamente STUDENT o TEACHER
+- No se puede registrar una cuenta sin completar todos los campos obligatorios
+
+*Requerimientos no funcionales:*
+- La contraseña debe almacenarse encriptada con bcrypt (nunca en texto plano)
+- El sistema debe generar un JWT válido inmediatamente al registrarse exitosamente
+- El tiempo de respuesta del registro no debe superar los 2 segundos
+- El formulario debe mostrar mensajes de error descriptivos por campo inválido
 
 ---
 
-#### HU-02 — Inicio de sesión de estudiante
+## H.U.02 — Iniciar sesión en la plataforma con mi correo electrónico y contraseña
+
 | Campo | Detalle |
-|-------|---------|
-| **Historia** | Como **estudiante**, quiero **iniciar sesión con mi correo y contraseña**, para **acceder a mis módulos y ver mi progreso guardado**. |
-| **Prioridad** | 🔴 Alta |
-| **Story Points** | 2 |
-| **Sprint** | Sprint 1 |
+|-------|--------|
+| **Valor** | ALTO/90 |
+| **Esfuerzo** | 20 |
+| **Riesgo** | ALTO |
 
-**Criterios de aceptación:**
-- [ ] El sistema autentica con correo y contraseña
-- [ ] Se genera un token JWT para la sesión
-- [ ] Si las credenciales son incorrectas, se muestra mensaje de error
-- [ ] El estudiante permanece autenticado por al menos 24 horas
-- [ ] Existe opción de "Cerrar sesión"
+**Como:** Estudiante  
+**Puedo:** Iniciar sesión en la plataforma con mi correo electrónico y contraseña  
+**Para:** Acceder a mis módulos de quichua y ver mi progreso guardado en la plataforma
+
+**Criterios de Aceptación**
+
+- **Dado que:** Ya tengo una cuenta registrada en ASHPA con rol STUDENT
+- **Cuando:** Ingreso mi correo y contraseña en el formulario de inicio de sesión
+- **Entonces:** El sistema verifica mis credenciales, genera un JWT de sesión y me redirige al dashboard del estudiante
+
+**Detalles**
+
+*Reglas del Negocio:*
+- No se permite el acceso con credenciales incorrectas; se debe mostrar un mensaje de error claro
+- La sesión tiene una duración de 24 horas antes de requerir nuevo inicio de sesión
+- Debe existir la opción de cerrar sesión en todo momento
+
+*Requerimientos no funcionales:*
+- El JWT debe almacenarse de forma segura en localStorage mediante Zustand authStore
+- El sistema no debe revelar si el error es de correo o de contraseña (seguridad)
+- El tiempo de respuesta del login no debe superar 1.5 segundos
 
 ---
 
-#### HU-03 — Inicio de sesión de docente
+## H.U.03 — Iniciar sesión con mis credenciales institucionales y acceder al panel docente
+
 | Campo | Detalle |
-|-------|---------|
-| **Historia** | Como **docente**, quiero **iniciar sesión con mis credenciales institucionales**, para **acceder al panel docente y gestionar a mis estudiantes**. |
-| **Prioridad** | 🔴 Alta |
-| **Story Points** | 2 |
-| **Sprint** | Sprint 1 |
+|-------|--------|
+| **Valor** | ALTO/90 |
+| **Esfuerzo** | 20 |
+| **Riesgo** | ALTO |
 
-**Criterios de aceptación:**
-- [ ] Los docentes tienen rol diferenciado del estudiante
-- [ ] Al autenticarse, el docente es redirigido al panel docente (distinto al del estudiante)
-- [ ] El sistema valida el rol antes de mostrar las funcionalidades docentes
+**Como:** Docente  
+**Puedo:** Iniciar sesión con mis credenciales institucionales y acceder al panel docente  
+**Para:** Gestionar el progreso de mis estudiantes y crear exámenes personalizados de quichua
+
+**Criterios de Aceptación**
+
+- **Dado que:** Tengo una cuenta registrada en ASHPA con rol TEACHER
+- **Cuando:** Ingreso mis credenciales en el formulario de login
+- **Entonces:** El sistema valida mis credenciales, verifica el rol TEACHER y me redirige al panel docente con sus funcionalidades exclusivas
+
+**Detalles**
+
+*Reglas del Negocio:*
+- Solo los usuarios con rol TEACHER pueden acceder al panel docente
+- Un estudiante (rol STUDENT) no puede acceder a las funciones exclusivas del docente
+- Las rutas del panel docente deben estar protegidas en el backend con RolesGuard
+
+*Requerimientos no funcionales:*
+- El RolesGuard de NestJS debe validar el rol antes de procesar cualquier solicitud de rutas docentes
+- La vista del dashboard debe ser completamente distinta a la del estudiante
+- El acceso no autorizado debe retornar un error HTTP 403 Forbidden
 
 ---
 
-### EP-02: Landing Page
+## H.U.04 — Ver una página principal atractiva que explique qué es ASHPA y su propósito
 
----
-
-#### HU-04 — Visualizar landing page
 | Campo | Detalle |
-|-------|---------|
-| **Historia** | Como **visitante**, quiero **ver una página principal atractiva que explique qué es ASHPA**, para **entender el propósito de la plataforma antes de registrarme**. |
-| **Prioridad** | 🔴 Alta |
-| **Story Points** | 5 |
-| **Sprint** | Sprint 1 |
+|-------|--------|
+| **Valor** | ALTO/90 |
+| **Esfuerzo** | 50 |
+| **Riesgo** | MEDIO |
 
-**Criterios de aceptación:**
-- [ ] La página muestra el nombre y logo de ASHPA
-- [ ] Existe una sección que explica qué es la plataforma y su propósito de revitalizar el quichua
-- [ ] Hay botones visibles de "Registrarse" e "Iniciar sesión"
-- [ ] La página es responsive (adaptable a móvil y escritorio)
-- [ ] El diseño refleja la identidad cultural quichua (colores, elementos visuales andinos)
+**Como:** Visitante  
+**Puedo:** Ver una página principal atractiva que explique qué es ASHPA y su propósito  
+**Para:** Conocer la plataforma antes de registrarme y decidir si quiero aprender quichua con ella
+
+**Criterios de Aceptación**
+
+- **Dado que:** Quiero conocer qué es ASHPA antes de crear una cuenta
+- **Cuando:** Accedo a la URL principal de la plataforma sin estar autenticado
+- **Entonces:** Se muestra la landing page con el nombre y logo de ASHPA, descripción del proyecto, su misión de revitalizar el quichua y botones de acceso
+
+**Detalles**
+
+*Reglas del Negocio:*
+- La landing page debe ser completamente accesible sin autenticación
+- Los botones de Registrarse e Iniciar sesión deben redirigir correctamente
+- El diseño debe reflejar la identidad cultural quichua (colores andinos, elementos visuales)
+
+*Requerimientos no funcionales:*
+- La página debe ser responsive y adaptable a dispositivos móviles y escritorio
+- El tiempo de carga de la landing page no debe superar los 3 segundos
+- El diseño debe estar implementado con Tailwind CSS y componentes React
 
 ---
 
-### EP-03: Módulos de Aprendizaje
+## H.U.05 — Ver todos los módulos de quichua disponibles organizados por nivel con su estado actual
 
----
-
-#### HU-05 — Ver lista de módulos disponibles
 | Campo | Detalle |
-|-------|---------|
-| **Historia** | Como **estudiante**, quiero **ver todos los módulos de quichua disponibles organizados por nivel de dificultad**, para **saber qué puedo aprender y en qué orden**. |
-| **Prioridad** | 🔴 Alta |
-| **Story Points** | 3 |
-| **Sprint** | Sprint 2 |
+|-------|--------|
+| **Valor** | ALTO/90 |
+| **Esfuerzo** | 30 |
+| **Riesgo** | MEDIO |
 
-**Criterios de aceptación:**
-- [ ] Los módulos aparecen ordenados de básico a avanzado
-- [ ] Cada módulo muestra su nombre, ícono representativo y estado (disponible / bloqueado / completado)
-- [ ] Los módulos bloqueados se muestran con candado hasta que el anterior sea aprobado
-- [ ] El módulo 1 (Saludos) siempre está disponible para todos los estudiantes
+**Como:** Estudiante  
+**Puedo:** Ver todos los módulos de quichua disponibles organizados por nivel con su estado actual  
+**Para:** Saber qué puedo aprender, qué he completado y en qué orden debo avanzar en la plataforma
+
+**Criterios de Aceptación**
+
+- **Dado que:** Estoy autenticado como estudiante en la plataforma ASHPA
+- **Cuando:** Accedo a la sección de módulos desde el menú principal
+- **Entonces:** El sistema consulta mi progreso y muestra los 6 módulos con su estado: disponible (verde), bloqueado (gris con candado) o completado (check verde con puntaje)
+
+**Detalles**
+
+*Reglas del Negocio:*
+- El Módulo 1 (Saludos) siempre está disponible para todos los estudiantes
+- Los módulos del 2 al 6 se desbloquean solo al aprobar el módulo anterior con puntaje ≥ 70%
+- Un módulo bloqueado no puede ser seleccionado ni abierto por el estudiante
+
+*Requerimientos no funcionales:*
+- Los módulos bloqueados deben mostrarse con ícono de candado (🔒) claramente visible
+- Los módulos completados deben mostrar el puntaje obtenido en la evaluación
+- El estado de los módulos debe cargarse desde el endpoint GET /modules del backend
 
 ---
 
-#### HU-06 — Completar módulo de vocabulario básico (Saludos)
+## H.U.06 — Acceder al módulo de Saludos y completar sus ejercicios interactivos de quichua
+
 | Campo | Detalle |
-|-------|---------|
-| **Historia** | Como **estudiante**, quiero **aprender vocabulario básico de saludos en quichua mediante ejercicios interactivos**, para **construir mi primera base en el idioma**. |
-| **Prioridad** | 🔴 Alta |
-| **Story Points** | 8 |
-| **Sprint** | Sprint 2 |
+|-------|--------|
+| **Valor** | ALTO/90 |
+| **Esfuerzo** | 80 |
+| **Riesgo** | ALTO |
 
-**Criterios de aceptación:**
-- [ ] El módulo contiene al menos 10 palabras/frases de saludo con audio y traducción
-- [ ] Incluye ejercicios de emparejamiento (quichua ↔ español)
-- [ ] Incluye ejercicios de completar la frase
-- [ ] El estudiante puede repetir el módulo tantas veces como quiera
-- [ ] Al finalizar todos los ejercicios, se habilita la evaluación del módulo
+**Como:** Estudiante  
+**Puedo:** Acceder al módulo de Saludos y completar sus ejercicios interactivos de quichua  
+**Para:** Construir mi primera base en el idioma quichua aprendiendo vocabulario de saludo cotidiano
+
+**Criterios de Aceptación**
+
+- **Dado que:** El Módulo 1 (Saludos) siempre está disponible y soy un estudiante autenticado
+- **Cuando:** Selecciono el módulo de Saludos y realizo sus ejercicios interactivos
+- **Entonces:** El sistema muestra retroalimentación inmediata por cada respuesta y al completar todos los ejercicios habilita el botón para ir a la evaluación del módulo
+
+**Detalles**
+
+*Reglas del Negocio:*
+- El módulo debe contener al menos 10 palabras o frases de saludo con traducción al español
+- El estudiante puede repetir los ejercicios cuantas veces desee antes de ir a la evaluación
+- No se puede acceder a la evaluación sin haber completado todos los ejercicios del módulo
+
+*Requerimientos no funcionales:*
+- Los ejercicios deben incluir los tres tipos: MULTIPLE_CHOICE, FILL_IN_THE_BLANK y MATCHING
+- El contenido debe reflejar la identidad cultural quichua ecuatoriana
+- Los ejercicios deben incluir audio de pronunciación de las palabras en quichua
 
 ---
 
-#### HU-07 — Completar módulo de Familia
+## H.U.07 — Acceder al módulo de Familia y aprender el vocabulario de relaciones familiares en quichua
+
 | Campo | Detalle |
-|-------|---------|
-| **Historia** | Como **estudiante**, quiero **aprender el vocabulario de familia en quichua**, para **ampliar mi vocabulario con términos de uso cotidiano**. |
-| **Prioridad** | 🟡 Media |
-| **Story Points** | 8 |
-| **Sprint** | Sprint 3 |
+|-------|--------|
+| **Valor** | MEDIO/60 |
+| **Esfuerzo** | 80 |
+| **Riesgo** | MEDIO |
 
-**Criterios de aceptación:**
-- [ ] El módulo está bloqueado hasta que el módulo de Saludos sea aprobado
-- [ ] Contiene al menos 12 términos relacionados a la familia con imágenes y audio
-- [ ] Incluye ejercicios interactivos equivalentes a los del módulo anterior
+**Como:** Estudiante  
+**Puedo:** Acceder al módulo de Familia y aprender el vocabulario de relaciones familiares en quichua  
+**Para:** Ampliar mi vocabulario con términos de uso cotidiano relacionados al entorno familiar
+
+**Criterios de Aceptación**
+
+- **Dado que:** He aprobado el módulo de Saludos con al menos 70% en su evaluación
+- **Cuando:** Selecciono el módulo de Familia (previamente desbloqueado) y completo sus ejercicios
+- **Entonces:** El sistema muestra los ejercicios con al menos 12 términos familiares en quichua con imágenes y retroalimentación inmediata
+
+**Detalles**
+
+*Reglas del Negocio:*
+- El módulo está bloqueado hasta que el estudiante apruebe el módulo de Saludos con ≥70%
+- Debe contener al menos 12 términos de vocabulario familiar con imágenes representativas
+
+*Requerimientos no funcionales:*
+- Las imágenes deben ser culturalmente pertinentes para las comunidades quichuas del Ecuador
+- Los ejercicios deben seguir el mismo flujo interactivo que el Módulo 1
 
 ---
 
-#### HU-08 — Completar módulo de Comida y Animales
+## H.U.08 — Acceder al módulo de Comida y Animales y aprender su vocabulario en quichua
+
 | Campo | Detalle |
-|-------|---------|
-| **Historia** | Como **estudiante**, quiero **aprender vocabulario de comida y animales en quichua**, para **enriquecer mi conocimiento del idioma con temas culturalmente relevantes**. |
-| **Prioridad** | 🟡 Media |
-| **Story Points** | 8 |
-| **Sprint** | Sprint 3 |
+|-------|--------|
+| **Valor** | MEDIO/60 |
+| **Esfuerzo** | 80 |
+| **Riesgo** | MEDIO |
 
-**Criterios de aceptación:**
-- [ ] Módulo desbloqueado al completar Familia
-- [ ] Al menos 10 términos de comida y 10 de animales con imágenes representativas
-- [ ] Incluye ejercicios de selección múltiple y escritura
+**Como:** Estudiante  
+**Puedo:** Acceder al módulo de Comida y Animales y aprender su vocabulario en quichua  
+**Para:** Enriquecer mi conocimiento del quichua con temas culturalmente relevantes de la vida andina
+
+**Criterios de Aceptación**
+
+- **Dado que:** He aprobado el módulo de Familia con al menos 70% en su evaluación
+- **Cuando:** Selecciono el módulo de Comida y Animales y completo sus ejercicios
+- **Entonces:** El sistema muestra al menos 10 términos de comida y 10 de animales andinos con ejercicios de selección múltiple y escritura
+
+**Detalles**
+
+*Reglas del Negocio:*
+- El módulo está bloqueado hasta aprobar el módulo de Familia con ≥70%
+- Los ejercicios deben incluir selección múltiple y escritura (FILL_IN_THE_BLANK)
+
+*Requerimientos no funcionales:*
+- El contenido debe incluir términos propios de la gastronomía y fauna andina ecuatoriana
+- Las imágenes de animales y alimentos deben ser reconocibles para comunidades indígenas del Ecuador
 
 ---
 
-#### HU-09 — Completar módulo de Tiempos del Día
+## H.U.09 — Acceder al módulo de Tiempos del Día y aprender a expresar momentos del día en quichua
+
 | Campo | Detalle |
-|-------|---------|
-| **Historia** | Como **estudiante**, quiero **aprender a expresar los tiempos del día en quichua**, para **usar el idioma en situaciones cotidianas reales**. |
-| **Prioridad** | 🟡 Media |
-| **Story Points** | 5 |
-| **Sprint** | Sprint 4 |
+|-------|--------|
+| **Valor** | MEDIO/60 |
+| **Esfuerzo** | 50 |
+| **Riesgo** | BAJO |
 
-**Criterios de aceptación:**
-- [ ] Módulo desbloqueado al completar Comida y Animales
-- [ ] Cubre: mañana, mediodía, tarde, noche y sus expresiones en quichua
-- [ ] Incluye ejemplos de frases completas en contexto
+**Como:** Estudiante  
+**Puedo:** Acceder al módulo de Tiempos del Día y aprender a expresar momentos del día en quichua  
+**Para:** Usar el idioma quichua en conversaciones cotidianas relacionadas al tiempo y la rutina diaria
+
+**Criterios de Aceptación**
+
+- **Dado que:** He aprobado el módulo de Comida y Animales con al menos 70%
+- **Cuando:** Selecciono el módulo de Tiempos del Día y realizo sus ejercicios
+- **Entonces:** El sistema muestra el vocabulario de mañana, mediodía, tarde y noche en quichua con frases completas de uso contextual
+
+**Detalles**
+
+*Reglas del Negocio:*
+- El módulo está bloqueado hasta aprobar el módulo de Comida y Animales con ≥70%
+- Debe incluir ejemplos de frases completas usando los términos aprendidos en contexto
+
+*Requerimientos no funcionales:*
+- El módulo debe incluir al menos 5 expresiones de tiempo con sus equivalentes en español
+- Los ejercicios deben contextualizarse en situaciones de la vida cotidiana quichua
 
 ---
 
-#### HU-10 — Completar módulo avanzado: Conjugaciones de Verbos
+## H.U.10 — Acceder al módulo de Conjugaciones de Verbos y aprender a conjugar verbos en quichua
+
 | Campo | Detalle |
-|-------|---------|
-| **Historia** | Como **estudiante**, quiero **aprender a conjugar verbos en quichua**, para **formar oraciones completas y comunicarme de manera más fluida**. |
-| **Prioridad** | 🟡 Media |
-| **Story Points** | 13 |
-| **Sprint** | Sprint 5 |
+|-------|--------|
+| **Valor** | MEDIO/60 |
+| **Esfuerzo** | 130 |
+| **Riesgo** | ALTO |
 
-**Criterios de aceptación:**
-- [ ] Módulo desbloqueado al completar todos los módulos de vocabulario básico
-- [ ] Cubre al menos 8 verbos comunes con sus conjugaciones en presente, pasado y futuro
-- [ ] Incluye ejercicios de construcción de oraciones
+**Como:** Estudiante  
+**Puedo:** Acceder al módulo de Conjugaciones de Verbos y aprender a conjugar verbos en quichua  
+**Para:** Formar oraciones completas y comunicarme de manera más fluida en el idioma quichua
+
+**Criterios de Aceptación**
+
+- **Dado que:** He completado y aprobado todos los módulos básicos de vocabulario (Saludos, Familia, Comida/Animales y Tiempos del Día)
+- **Cuando:** Selecciono el módulo de Conjugaciones de Verbos y realizo sus ejercicios
+- **Entonces:** El sistema muestra al menos 8 verbos comunes en quichua con su conjugación en tiempo presente, pasado y futuro, y ejercicios de construcción de oraciones
+
+**Detalles**
+
+*Reglas del Negocio:*
+- El módulo está bloqueado hasta completar y aprobar todos los módulos básicos anteriores
+- Debe incluir al menos 8 verbos conjugados en tres tiempos (presente, pasado y futuro)
+- Los ejercicios deben incluir construcción de oraciones completas con los verbos aprendidos
+
+*Requerimientos no funcionales:*
+- Los ejercicios de este módulo deben ser de mayor complejidad que los módulos básicos
+- Se deben incluir explicaciones gramaticales breves sobre la estructura verbal del quichua
 
 ---
 
-#### HU-11 — Completar módulo avanzado: Pronombres y Adjetivos
+## H.U.11 — Acceder al módulo de Pronombres y Adjetivos del quichua y aprender su uso
+
 | Campo | Detalle |
-|-------|---------|
-| **Historia** | Como **estudiante**, quiero **aprender los pronombres y adjetivos del quichua**, para **construir oraciones más complejas y descriptivas**. |
-| **Prioridad** | 🟢 Baja |
-| **Story Points** | 8 |
-| **Sprint** | Sprint 6 |
+|-------|--------|
+| **Valor** | BAJO/30 |
+| **Esfuerzo** | 80 |
+| **Riesgo** | BAJO |
 
-**Criterios de aceptación:**
-- [ ] Módulo desbloqueado al completar Conjugaciones de Verbos
-- [ ] Cubre pronombres personales y al menos 15 adjetivos comunes en quichua
+**Como:** Estudiante  
+**Puedo:** Acceder al módulo de Pronombres y Adjetivos del quichua y aprender su uso  
+**Para:** Construir oraciones más complejas y descriptivas que me permitan una comunicación avanzada en quichua
+
+**Criterios de Aceptación**
+
+- **Dado que:** He aprobado el módulo de Conjugaciones de Verbos con al menos 70%
+- **Cuando:** Selecciono el módulo de Pronombres y Adjetivos y completo sus ejercicios
+- **Entonces:** El sistema muestra los pronombres personales del quichua y al menos 15 adjetivos comunes con ejercicios de construcción de oraciones complejas
+
+**Detalles**
+
+*Reglas del Negocio:*
+- Es el módulo de mayor dificultad del sistema y solo se desbloquea al aprobar el módulo de Verbos
+- Debe incluir pronombres personales completos y al menos 15 adjetivos comunes
+
+*Requerimientos no funcionales:*
+- Los ejercicios deben combinar pronombres, adjetivos y verbos previamente aprendidos
+- El módulo debe incluir ejemplos de oraciones completas en quichua con traducción al español
 
 ---
 
-### EP-04: Evaluaciones y Progreso
+## H.U.12 — Realizar una evaluación al terminar cada módulo de aprendizaje
 
----
-
-#### HU-12 — Realizar evaluación al finalizar un módulo
 | Campo | Detalle |
-|-------|---------|
-| **Historia** | Como **estudiante**, quiero **realizar una evaluación al terminar cada módulo**, para **demostrar que domino el contenido y desbloquear el siguiente nivel**. |
-| **Prioridad** | 🔴 Alta |
-| **Story Points** | 8 |
-| **Sprint** | Sprint 2 |
+|-------|--------|
+| **Valor** | ALTO/90 |
+| **Esfuerzo** | 80 |
+| **Riesgo** | ALTO |
 
-**Criterios de aceptación:**
-- [ ] La evaluación contiene al menos 10 preguntas de selección múltiple y completar
-- [ ] Se requiere un mínimo del 70% de respuestas correctas para aprobar
-- [ ] Si el estudiante no aprueba, puede reintentar la evaluación
-- [ ] Al aprobar, el siguiente módulo se desbloquea automáticamente
-- [ ] Se guarda el puntaje obtenido y la fecha de aprobación
+**Como:** Estudiante  
+**Puedo:** Realizar una evaluación al terminar cada módulo de aprendizaje  
+**Para:** Demostrar el dominio del contenido aprendido y desbloquear automáticamente el siguiente nivel
+
+**Criterios de Aceptación**
+
+- **Dado que:** He completado todos los ejercicios del módulo actual
+- **Cuando:** Accedo a la evaluación del módulo, respondo todas las preguntas y envío mis respuestas
+- **Entonces:** El sistema calcula mi puntaje; si es ≥70% el módulo queda aprobado, el siguiente módulo se desbloquea automáticamente y el intento queda registrado con mi puntaje y fecha
+
+**Detalles**
+
+*Reglas del Negocio:*
+- El puntaje mínimo de aprobación es el 70% de respuestas correctas
+- El estudiante puede reintentar la evaluación sin límite de intentos
+- No se puede acceder a la evaluación sin haber completado previamente todos los ejercicios del módulo
+- Si el puntaje es menor al 70%, el siguiente módulo permanece bloqueado
+
+*Requerimientos no funcionales:*
+- El desbloqueo del siguiente módulo debe ocurrir automáticamente sin necesidad de recargar la página
+- Cada intento de evaluación debe quedar registrado en la base de datos (tabla EvalAttempt)
+- La evaluación debe contener al menos 10 preguntas por módulo
 
 ---
 
-#### HU-13 — Ver panel de progreso personal
+## H.U.13 — Ver un panel con mi progreso personal en todos los módulos de la plataforma
+
 | Campo | Detalle |
-|-------|---------|
-| **Historia** | Como **estudiante**, quiero **ver un panel con mi progreso en todos los módulos**, para **saber cuánto he avanzado y qué me falta por completar**. |
-| **Prioridad** | 🔴 Alta |
-| **Story Points** | 5 |
-| **Sprint** | Sprint 3 |
+|-------|--------|
+| **Valor** | ALTO/90 |
+| **Esfuerzo** | 50 |
+| **Riesgo** | MEDIO |
 
-**Criterios de aceptación:**
-- [ ] El panel muestra el porcentaje de completitud de cada módulo
-- [ ] Se visualizan los módulos completados, en progreso y bloqueados
-- [ ] Se muestra el puntaje obtenido en cada evaluación aprobada
-- [ ] Existe un indicador general de progreso en la plataforma (ej: 3 de 8 módulos completados)
+**Como:** Estudiante  
+**Puedo:** Ver un panel con mi progreso personal en todos los módulos de la plataforma  
+**Para:** Conocer cuánto he avanzado en el aprendizaje del quichua y qué módulos me faltan por completar
+
+**Criterios de Aceptación**
+
+- **Dado que:** Estoy autenticado como estudiante y he interactuado con al menos un módulo de la plataforma
+- **Cuando:** Accedo a la sección 'Mi Progreso' desde el menú principal
+- **Entonces:** El sistema muestra el porcentaje de completitud de cada módulo, los puntajes obtenidos en las evaluaciones aprobadas y una barra de progreso general animada con el avance total
+
+**Detalles**
+
+*Reglas del Negocio:*
+- El progreso debe reflejar el estado real y actualizado del estudiante en tiempo real
+- Los módulos no iniciados deben mostrarse con 0% de completitud
+- El porcentaje general debe calcularse como la proporción de módulos completados respecto al total
+
+*Requerimientos no funcionales:*
+- La barra de progreso general debe actualizarse automáticamente al completar módulos o evaluaciones
+- La sección de progreso debe cargar datos desde el endpoint GET /progress/me del backend
+- Las animaciones de la barra deben implementarse con Framer Motion
 
 ---
 
-#### HU-14 — Recibir insignias por logros
+## H.U.14 — Recibir insignias automáticamente cuando logro hitos importantes en mi aprendizaje
+
 | Campo | Detalle |
-|-------|---------|
-| **Historia** | Como **estudiante**, quiero **recibir insignias cuando logre hitos importantes**, para **sentirme motivado a continuar aprendiendo quichua**. |
-| **Prioridad** | 🟡 Media |
-| **Story Points** | 5 |
-| **Sprint** | Sprint 4 |
+|-------|--------|
+| **Valor** | MEDIO/60 |
+| **Esfuerzo** | 50 |
+| **Riesgo** | MEDIO |
 
-**Criterios de aceptación:**
-- [ ] Se otorgan insignias al: completar el primer módulo, completar 3 módulos, completar todos los módulos básicos, aprobar con 100% en cualquier evaluación
-- [ ] Las insignias se muestran en el perfil del estudiante
-- [ ] Aparece una animación/notificación al desbloquear una insignia
+**Como:** Estudiante  
+**Puedo:** Recibir insignias automáticamente cuando logro hitos importantes en mi aprendizaje  
+**Para:** Sentirme motivado y reconocido por mi avance en el aprendizaje del idioma quichua
+
+**Criterios de Aceptación**
+
+- **Dado que:** Estoy autenticado y he cumplido las condiciones para ganar una insignia por mis logros
+- **Cuando:** El sistema detecta que alcancé un hito: completé el primer módulo, 3 módulos, todos los básicos o saqué 100% en una evaluación
+- **Entonces:** El sistema asigna la insignia correspondiente, aparece una notificación animada tipo toast en la pantalla y la insignia queda visible en mi sección de logros
+
+**Detalles**
+
+*Reglas del Negocio:*
+- Las 4 insignias definidas son: 'Primer Paso' (1 módulo completado), 'En Camino' (3 módulos), 'Base Sólida' (todos los módulos básicos), 'Perfección' (100% en cualquier evaluación)
+- Cada insignia se puede ganar una sola vez
+- Las insignias se otorgan automáticamente sin que el estudiante tenga que solicitarlas
+
+*Requerimientos no funcionales:*
+- La notificación de insignia debe mostrarse con animación de Framer Motion (toast) sin interrumpir el flujo
+- Las insignias deben quedar registradas en la base de datos (tabla UserBadge) con fecha de obtención
+- La sección 'Mis Insignias' debe cargarse desde el endpoint GET /badges/me
 
 ---
 
-### EP-05: Panel Docente
+## H.U.15 — Ver el progreso de todos mis estudiantes en tiempo real desde el panel docente
 
----
-
-#### HU-15 — Ver progreso de todos los estudiantes
 | Campo | Detalle |
-|-------|---------|
-| **Historia** | Como **docente**, quiero **ver el progreso de cada uno de mis estudiantes en tiempo real**, para **identificar quiénes necesitan apoyo adicional en el aprendizaje del quichua**. |
-| **Prioridad** | 🔴 Alta |
-| **Story Points** | 8 |
-| **Sprint** | Sprint 4 |
+|-------|--------|
+| **Valor** | ALTO/90 |
+| **Esfuerzo** | 80 |
+| **Riesgo** | ALTO |
 
-**Criterios de aceptación:**
-- [ ] El panel muestra una tabla con todos los estudiantes y su progreso por módulo
-- [ ] Se puede filtrar por módulo o por nombre de estudiante
-- [ ] Se muestra el último acceso de cada estudiante a la plataforma
-- [ ] Los datos se actualizan sin necesidad de recargar la página (tiempo real)
+**Como:** Docente  
+**Puedo:** Ver el progreso de todos mis estudiantes en tiempo real desde el panel docente  
+**Para:** Identificar a los estudiantes que necesitan apoyo adicional en el aprendizaje del quichua
+
+**Criterios de Aceptación**
+
+- **Dado que:** Estoy autenticado con rol TEACHER y existen estudiantes registrados en la plataforma
+- **Cuando:** Accedo al panel 'Mis Estudiantes' desde el dashboard docente
+- **Entonces:** El sistema muestra una tabla con todos los estudiantes (rol STUDENT), su progreso por módulo, puntajes de evaluaciones y fecha de su último acceso a la plataforma
+
+**Detalles**
+
+*Reglas del Negocio:*
+- Solo los usuarios con rol TEACHER pueden acceder a la información de progreso de estudiantes
+- Los datos deben reflejar el progreso actualizado de cada estudiante
+- El docente debe poder filtrar la tabla por nombre de estudiante o por módulo
+
+*Requerimientos no funcionales:*
+- Los datos deben cargarse desde el endpoint GET /teacher/students del backend
+- La tabla debe ordenarse por defecto por progreso ascendente (menor progreso primero) para priorizar atención
+- El acceso a esta ruta sin rol TEACHER debe retornar HTTP 403 Forbidden
 
 ---
 
-#### HU-16 — Asignar examen personalizado a estudiantes
+## H.U.16 — Crear exámenes personalizados con mis propias preguntas y asignarlos a mis estudiantes con una fecha límite
+
 | Campo | Detalle |
-|-------|---------|
-| **Historia** | Como **docente**, quiero **crear y asignar exámenes adicionales a mis estudiantes**, para **evaluar el aprendizaje del quichua según mis propios criterios pedagógicos**. |
-| **Prioridad** | 🟡 Media |
-| **Story Points** | 13 |
-| **Sprint** | Sprint 5 |
+|-------|--------|
+| **Valor** | MEDIO/60 |
+| **Esfuerzo** | 130 |
+| **Riesgo** | ALTO |
 
-**Criterios de aceptación:**
-- [ ] El docente puede crear exámenes con preguntas de selección múltiple y completar
-- [ ] Puede asignar el examen a uno o varios estudiantes con fecha límite
-- [ ] Los estudiantes ven el examen pendiente en su dashboard
-- [ ] El docente puede ver los resultados una vez completado
+**Como:** Docente  
+**Puedo:** Crear exámenes personalizados con mis propias preguntas y asignarlos a mis estudiantes con una fecha límite  
+**Para:** Evaluar el aprendizaje del quichua de mis estudiantes según mis propios criterios pedagógicos
+
+**Criterios de Aceptación**
+
+- **Dado que:** Estoy autenticado como docente y existen estudiantes registrados en la plataforma ASHPA
+- **Cuando:** Creo un examen con preguntas de selección múltiple o completar la frase, selecciono los estudiantes y establezco una fecha límite
+- **Entonces:** El sistema guarda el examen, registra las asignaciones y los estudiantes asignados ven el examen como 'pendiente' en su dashboard
+
+**Detalles**
+
+*Reglas del Negocio:*
+- Un examen debe tener al menos 1 pregunta para poder ser guardado
+- La fecha límite de entrega debe ser posterior a la fecha actual
+- El docente puede asignar el mismo examen a múltiples estudiantes en una sola acción
+
+*Requerimientos no funcionales:*
+- Los exámenes deben crearse mediante POST /teacher/exams y las asignaciones mediante POST /teacher/exams/:id/assign
+- Los datos del examen deben almacenarse en la tabla TeacherExam y las asignaciones en ExamAssignment
+- Los estudiantes asignados deben ver el examen en su dashboard sin necesidad de recargar la página
 
 ---
 
-#### HU-17 — Ver resultados de exámenes asignados
+## H.U.17 — Consultar los resultados de los exámenes que asigné a mis estudiantes
+
 | Campo | Detalle |
-|-------|---------|
-| **Historia** | Como **docente**, quiero **ver los resultados de los exámenes que asigné**, para **evaluar el nivel de comprensión del quichua de cada estudiante**. |
-| **Prioridad** | 🟡 Media |
-| **Story Points** | 5 |
-| **Sprint** | Sprint 5 |
+|-------|--------|
+| **Valor** | MEDIO/60 |
+| **Esfuerzo** | 50 |
+| **Riesgo** | MEDIO |
 
-**Criterios de aceptación:**
-- [ ] El docente ve una lista de los exámenes asignados con su estado (pendiente / completado)
-- [ ] Para cada examen completado, se muestra el puntaje de cada estudiante
-- [ ] Se puede exportar el reporte de resultados
+**Como:** Docente  
+**Puedo:** Consultar los resultados de los exámenes que asigné a mis estudiantes  
+**Para:** Evaluar cuantitativamente el desempeño de mis estudiantes en el aprendizaje del quichua
 
----
+**Criterios de Aceptación**
 
-### EP-06: Administración
+- **Dado que:** Estoy autenticado como docente y al menos un examen fue completado por uno o más estudiantes
+- **Cuando:** Accedo a la sección 'Mis Exámenes' y selecciono un examen específico de la lista
+- **Entonces:** El sistema muestra el puntaje de cada estudiante asignado, la fecha de realización y el estado del examen (completado en verde / pendiente en naranja)
 
----
+**Detalles**
 
-#### HU-18 — Gestionar usuarios desde panel de administración
-| Campo | Detalle |
-|-------|---------|
-| **Historia** | Como **administrador**, quiero **gestionar las cuentas de usuarios desde un panel de administración**, para **mantener la plataforma organizada y segura**. |
-| **Prioridad** | 🟢 Baja |
-| **Story Points** | 8 |
-| **Sprint** | Sprint 6 |
+*Reglas del Negocio:*
+- Solo el docente que creó el examen puede ver sus resultados
+- Los exámenes pendientes y completados deben estar claramente diferenciados visualmente
+- Un examen sin ningún estudiante que lo haya completado debe mostrarse con estado 'Pendiente' para todos
 
-**Criterios de aceptación:**
-- [ ] El administrador puede ver, activar, desactivar y eliminar cuentas de usuario
-- [ ] Puede asignar o cambiar roles (estudiante / docente / administrador)
-- [ ] El panel requiere autenticación con rol de administrador
+*Requerimientos no funcionales:*
+- Los resultados deben cargarse desde GET /teacher/exams/:id/results del backend
+- Los resultados deben poder exportarse para uso pedagógico del docente
+- El tiempo de carga de los resultados no debe superar los 2 segundos
 
 ---
 
-#### HU-19 — Gestionar módulos y contenido desde administración
-| Campo | Detalle |
-|-------|---------|
-| **Historia** | Como **administrador**, quiero **agregar, editar o desactivar módulos de quichua desde el panel de administración**, para **mantener el contenido de la plataforma actualizado y correcto**. |
-| **Prioridad** | 🟢 Baja |
-| **Story Points** | 8 |
-| **Sprint** | Sprint 7 |
+## 📊 Priorización del Backlog
 
-**Criterios de aceptación:**
-- [ ] Se puede crear un nuevo módulo con nombre, descripción, nivel y ejercicios
-- [ ] Se puede editar el contenido de ejercicios ya existentes
-- [ ] Se puede activar o desactivar un módulo sin eliminarlo permanentemente
+### Backlog Ordenado por VALOR (Descendente)
 
----
+| H.U | VALOR | ESFUERZO |
+|-----|-------|----------|
+| H.U 16 | MEDIO | 130 |
+| H.U 10 | MEDIO | 130 |
+| H.U 11 | BAJO | 80 |
+| H.U 12 | ALTO | 80 |
+| H.U 15 | ALTO | 80 |
+| H.U 08 | MEDIO | 80 |
+| H.U 07 | MEDIO | 80 |
+| H.U 06 | ALTO | 80 |
+| H.U 04 | ALTO | 50 |
+| H.U 09 | MEDIO | 50 |
+| H.U 13 | ALTO | 50 |
+| H.U 14 | MEDIO | 50 |
+| H.U 17 | MEDIO | 50 |
+| H.U 05 | ALTO | 30 |
+| H.U 01 | ALTO | 30 |
+| H.U 02 | ALTO | 20 |
+| H.U 03 | ALTO | 20 |
 
-## 📊 Resumen del Product Backlog
+### Backlog Ordenado por CRITERIO TÉCNICO
 
-| Épica | Historias | Story Points Totales | Sprint |
-|-------|-----------|---------------------|--------|
-| EP-01: Autenticación | HU-01, HU-02, HU-03 | 7 | Sprint 1 |
-| EP-02: Landing Page | HU-04 | 5 | Sprint 1 |
-| EP-03: Módulos | HU-05 a HU-11 | 51 | Sprints 2–6 |
-| EP-04: Evaluaciones | HU-12, HU-13, HU-14 | 18 | Sprints 2–4 |
-| EP-05: Panel Docente | HU-15, HU-16, HU-17 | 26 | Sprints 4–5 |
-| EP-06: Administración | HU-18, HU-19 | 16 | Sprints 6–7 |
-| **TOTAL** | **19 historias** | **123 Story Points** | **7 Sprints** |
-
----
-
-## 🗓️ Distribución por Sprint
-
-| Sprint | Semanas | Historias incluidas | Story Points | Objetivo |
-|--------|---------|---------------------|-------------|----------|
-| **Sprint 1** | 1–2 | HU-01, HU-02, HU-03, HU-04 | 12 | Autenticación y Landing Page funcional |
-| **Sprint 2** | 3–4 | HU-05, HU-06, HU-12 | 19 | Primer módulo jugable con evaluación |
-| **Sprint 3** | 5–6 | HU-07, HU-08, HU-13 | 21 | Módulos Familia + Comida/Animales + Panel de progreso |
-| **Sprint 4** | 7–8 | HU-09, HU-14, HU-15 | 18 | Módulo Tiempos del Día + Insignias + Panel Docente |
-| **Sprint 5** | 9–10 | HU-10, HU-16, HU-17 | 31 | Módulo Verbos + Sistema de exámenes docente |
-| **Sprint 6** | 11–12 | HU-11, HU-18 | 16 | Módulo avanzado + Administración de usuarios |
-| **Sprint 7** | 13–14 | HU-19 + Pruebas finales | 8 | Gestión de módulos + QA y despliegue final |
+| H.U | VALOR | ESFUERZO |
+|-----|-------|----------|
+| H.U 01 | ALTO | 30 |
+| H.U 02 | ALTO | 20 |
+| H.U 03 | ALTO | 20 |
+| H.U 04 | ALTO | 50 |
+| H.U 05 | ALTO | 30 |
+| H.U 06 | ALTO | 80 |
+| H.U 12 | ALTO | 80 |
+| H.U 07 | MEDIO | 80 |
+| H.U 08 | MEDIO | 80 |
+| H.U 09 | MEDIO | 50 |
+| H.U 13 | ALTO | 50 |
+| H.U 14 | MEDIO | 50 |
+| H.U 15 | ALTO | 80 |
+| H.U 10 | MEDIO | 130 |
+| H.U 16 | MEDIO | 130 |
+| H.U 17 | MEDIO | 50 |
+| H.U 11 | BAJO | 80 |
